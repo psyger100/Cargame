@@ -55,6 +55,7 @@ export async function signUpNewUser(formData: FormData) {
     });
     if (error) throw error;
     if (data) {
+        // @ts-ignore
         setProfile(data.user.id, data.user.email);
     }
     return data;

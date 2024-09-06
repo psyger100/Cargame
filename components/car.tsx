@@ -80,7 +80,7 @@ const Car: React.FC = () => {
             );
             camera.position.z = 5;
             const renderer = new THREE.WebGLRenderer();
-            const controls = new OrbitControls(camera, renderer.domElement);
+            // const controls = new OrbitControls(camera, renderer.domElement);
             renderer.setSize(window.innerWidth, window.innerHeight);
             containerRef.current?.appendChild(renderer.domElement);
             scene.add(vehicle);
@@ -92,7 +92,7 @@ const Car: React.FC = () => {
 
             const animate = () => {
                 requestAnimationFrame(animate);
-                controls.update();
+                // controls.update();
                 renderer.render(scene, camera);
             };
             animate();
@@ -101,6 +101,6 @@ const Car: React.FC = () => {
             };
         }
     }, []);
-    return <div ref={containerRef} />;
+    return <div ref={containerRef}></div>;
 };
 export default Car;

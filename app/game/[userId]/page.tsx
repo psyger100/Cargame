@@ -1,6 +1,5 @@
 import { whoIs } from "@/actions/users";
-import Car from "@/components/car";
-import Game from "@/components/Game";
+import Game from "@/components/GameCanvas";
 
 interface userInformationType {
     id: string;
@@ -11,11 +10,11 @@ interface userInformationType {
 export default async function game({ params }: any) {
     const userInfomation = await whoIs(params.userId);
     return (
-        <div className="flex items-center justify-center flex-col">
+        <div className="flex items-center flex-col w-full overflow-hidden">
             {/* @ts-ignore */}
-            <p>user id: {userInfomation[0].name}</p>
-            <Car />
-            {/* <Game /> */}
+            {/* <p>user id: {userInfomation[0].name}</p> */}
+
+            <Game />
         </div>
     );
 }
