@@ -110,7 +110,11 @@ function Game() {
                 if (e.key === "w") {
                     if (zAxisIncliment != 0) {
                         vehicle.position.z += zAxisIncliment;
-                        vehicle.position.x -= 0.1;
+                        if (zAxisIncliment < -2 || zAxisIncliment) {
+                            vehicle.position.x += 0.1;
+                        } else {
+                            vehicle.position.x -= 0.1;
+                        }
                     } else {
                         vehicle.position.x -= 0.1;
                     }
@@ -124,12 +128,12 @@ function Game() {
                 if (e.key === "a") {
                     vehicle.position.z += 0.1;
                     zAxisIncliment += 0.1;
-                    plane.rotation.y += 0.1;
                     vehicle.rotation.y += 0.1;
                     camera.lookAt(vehicle.position);
                 }
                 if (e.key === "d") {
                     zAxisIncliment -= 0.1;
+
                     vehicle.position.z -= 0.1;
                     vehicle.rotation.y -= 0.1;
                     camera.lookAt(vehicle.position);
