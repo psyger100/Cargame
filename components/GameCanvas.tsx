@@ -5,8 +5,6 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import * as THREE from "three";
 
 function Game() {
-    const raycaster = new THREE.Raycaster();
-    const mouse = new THREE.Vector2();
     const containerRef = useRef<HTMLDivElement>(null);
     function createSphereWheel(
         radius: number,
@@ -105,45 +103,63 @@ function Game() {
             vehicle.position.y = 1;
             vehicle.rotation.y = Math.PI / 2;
 
-            let zAxisIncliment = 0;
-            window.addEventListener("keydown", (e) => {
-                if (e.key === "w") {
-                    if (zAxisIncliment != 0) {
-                        vehicle.position.z += zAxisIncliment;
-                        if (zAxisIncliment < -2 || zAxisIncliment) {
-                            vehicle.position.x += 0.1;
-                        } else {
-                            vehicle.position.x -= 0.1;
-                        }
-                    } else {
-                        vehicle.position.x -= 0.1;
-                    }
+            let vehicleSpeed = 0.1;
+            let rotationY = vehicle.rotation.y;
+            const keys = {};
 
-                    camera.lookAt(vehicle.position);
-                }
-                if (e.key === "s") {
-                    vehicle.position.x += 0.1;
-                    camera.lookAt(vehicle.position);
-                }
-                if (e.key === "a") {
-                    vehicle.position.z += 0.1;
-                    zAxisIncliment += 0.1;
-                    vehicle.rotation.y += 0.1;
-                    camera.lookAt(vehicle.position);
-                }
-                if (e.key === "d") {
-                    zAxisIncliment -= 0.1;
-
-                    vehicle.position.z -= 0.1;
-                    vehicle.rotation.y -= 0.1;
-                    camera.lookAt(vehicle.position);
-                }
+            document.addEventListener("keydown", (event: any) => {
+                // @ts-ignore
+                keys[event.key.toLowerCase()] = true;
             });
+
+            document.addEventListener("keyup", (event: any) => {
+                // @ts-ignore
+                keys[event.key.toLowerCase()] = false;
+            });
+
+            const handleMouseMove = (event: any) => {
+                const mouseX = event.movementX;
+                const sensitivity = 0.001;
+                rotationY -= mouseX * sensitivity; // Update rotationY
+            };
+
+            window.addEventListener("mousemove", handleMouseMove);
+
+            // Random Objects falling from the sky.
+            const renderShape = () => {
+                const geometry = new THREE.BoxGeometry(2, 2, 2);
+                const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+                const object = new THREE.Mesh(geometry, material);
+                object.position.x = Math.random() * 10 - 5;
+                object.position.y = 10;
+                object.position.z = Math.random() * 10 - 5;
+                scene.add(object);
+                const animate = () => {
+                    requestAnimationFrame(animate);
+                    object.position.y -= 0.05;
+                    if (object.position.y < -2) {
+                        scene.remove(object);
+                    }
+                };
+                animate();
+            };
+
+            setInterval(() => {
+                renderShape();
+            }, 2000);
 
             containerRef.current?.appendChild(renderer.domElement);
             const animate = () => {
                 requestAnimationFrame(animate);
-
+                // @ts-ignore
+                if (keys["w"]) {
+                    vehicle.translateZ(-vehicleSpeed);
+                }
+                // @ts-ignore
+                if (keys["s"]) {
+                    vehicle.translateZ(vehicleSpeed);
+                }
+                vehicle.rotation.y = rotationY;
                 camera.position.x = vehicle.position.x + 5;
                 camera.position.y = vehicle.position.y + 1;
                 camera.position.z = vehicle.position.z + 1;
