@@ -54,14 +54,14 @@ export default function SignInForm() {
                     </button>
                 </form>
 
-                <div className="mt-4 text-center">
+                {/* <div className="mt-4 text-center">
                     <Link
                         href={"/signup"}
                         className="text-orange-500 hover:underline text-sm"
                     >
                         Register now
                     </Link>
-                </div>
+                </div> */}
             </div>
         </div>
     );
