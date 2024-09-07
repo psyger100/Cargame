@@ -1,3 +1,4 @@
+import SignOutButton from "@/components/SignOutButton";
 import { getUser } from "@/lib/auth";
 import Link from "next/link";
 
@@ -11,6 +12,7 @@ export default async function Home() {
                     <Link href={`/game/${user.id}`} className="bg-emerald-700 p-2">
                         playgame
                     </Link>
+                    <SignOutButton />
                 </>
             ) : (
                 <div>

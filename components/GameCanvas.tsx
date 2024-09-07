@@ -1,11 +1,19 @@
 "use client";
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
 import * as THREE from "three";
+import game from "@/app/game/[userId]/page";
 
 function Game() {
     const containerRef = useRef<HTMLDivElement>(null);
+    const [Score, setScore] = useState(0);
+    const [gameOver, setGameOver] = useState(false);
+    // Random Hexadecimal color code  generator like 0x00ff00 return type number
+    function randomColor() {
+        return Math.random() * 0xffffff;
+    }
+
     function createSphereWheel(
         radius: number,
         widthSegments: number,
@@ -120,33 +128,106 @@ function Game() {
             const handleMouseMove = (event: any) => {
                 const mouseX = event.movementX;
                 const sensitivity = 0.001;
-                rotationY -= mouseX * sensitivity; // Update rotationY
+                rotationY -= mouseX * sensitivity;
             };
 
             window.addEventListener("mousemove", handleMouseMove);
 
             // Random Objects falling from the sky.
             const renderShape = () => {
-                const geometry = new THREE.BoxGeometry(2, 2, 2);
-                const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+                const shapes = [
+                    "cube",
+                    "sphere",
+                    "cylinder",
+                    "cone",
+                    "torus",
+                    "octahedron",
+                ];
+                const randomShape = shapes[Math.floor(Math.random() * shapes.length)];
+                let geometry;
+                switch (randomShape) {
+                    case "cube":
+                        geometry = new THREE.BoxGeometry(
+                            Math.floor(Math.random() * 8),
+                            Math.floor(Math.random() * 8),
+                            Math.floor(Math.random() * 8),
+                        );
+                        break;
+                    case "sphere":
+                        geometry = new THREE.SphereGeometry(
+                            Math.floor(Math.random() * 20),
+                            Math.floor(Math.random() * 32),
+                            Math.floor(Math.random() * 32),
+                        );
+                        break;
+                    case "cylinder":
+                        geometry = new THREE.CylinderGeometry(
+                            Math.floor(Math.random() * 8),
+                            Math.floor(Math.random() * 8),
+                            Math.floor(Math.random() * 8),
+                            Math.floor(Math.random() * 40),
+                        );
+                        break;
+                    case "cone":
+                        geometry = new THREE.ConeGeometry(
+                            Math.floor(Math.random() * 8),
+                            Math.floor(Math.random() * 8),
+                            Math.floor(Math.random() * 40),
+                        );
+                        break;
+                    case "torus":
+                        geometry = new THREE.TorusGeometry(
+                            Math.floor(Math.random() * 4),
+                            0.3,
+                            Math.floor(Math.random() * 20),
+                            Math.floor(Math.random() * 150),
+                        );
+                        break;
+                    case "octahedron":
+                        geometry = new THREE.OctahedronGeometry(
+                            Math.floor(Math.random() * 8),
+                        );
+                        break;
+                    default:
+                        geometry = new THREE.BoxGeometry(
+                            Math.floor(Math.random() * 8),
+                            Math.floor(Math.random() * 8),
+                            Math.floor(Math.random() * 8),
+                        );
+                }
+
+                const material = new THREE.MeshBasicMaterial({ color: randomColor() });
                 const object = new THREE.Mesh(geometry, material);
-                object.position.x = Math.random() * 10 - 5;
+                object.position.x = vehicle.position.x - Math.floor(Math.random() * 4);
                 object.position.y = 10;
-                object.position.z = Math.random() * 10 - 5;
+                object.position.z = vehicle.position.z - Math.floor(Math.random() * 4);
                 scene.add(object);
+                let objectRemoved = false;
                 const animate = () => {
-                    requestAnimationFrame(animate);
                     object.position.y -= 0.05;
-                    if (object.position.y < -2) {
+                    if (object.position.y < -10 && !objectRemoved && !gameOver) {
+                        objectRemoved = true;
                         scene.remove(object);
+                        setScore((prev) => prev + 0.5);
                     }
+                    if (
+                        object.position.x === vehicle.position.x &&
+                        vehicle.position.z - object.position.z <= 2 &&
+                        object.position.y < 1
+                    ) {
+                        clearTimeout(randomShapeAtLittleInterval);
+                        setGameOver(true);
+                    }
+                    requestAnimationFrame(animate);
                 };
                 animate();
             };
 
-            setInterval(() => {
-                renderShape();
-            }, 2000);
+            const randomShapeAtLittleInterval = setInterval(() => {
+                if (!gameOver) {
+                    renderShape();
+                }
+            }, 1500);
 
             containerRef.current?.appendChild(renderer.domElement);
             const animate = () => {
@@ -176,7 +257,14 @@ function Game() {
 
     return (
         <div ref={containerRef}>
-            <h1 className="absolute text-white right-20 font-bold text-2xl">SCORE: 0</h1>
+            <h1 className="absolute text-white right-20 font-bold text-2xl">
+                SCORE: {Score}
+            </h1>
+            {gameOver && (
+                <h1 className="absolute text-white font-bold text-6xl top-0 right-50 ">
+                    GAME OVER
+                </h1>
+            )}
         </div>
     );
 }
