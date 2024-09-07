@@ -11,22 +11,15 @@ interface userInformationType {
 }
 export default async function game({ params }: any) {
     const userInfomation = await whoIs(params.userId);
-    const user = await getUser();
+    // const user = await getUser();
 
     return (
         <div className="flex items-center flex-col w-full overflow-hidden">
-            {/* @ts-ignore */}
-            {user.id == params.userId ? (
-                <Game
-                    userId={params.userId}
-                    // @ts-ignore
-                    displayName={userInfomation?.[0]?.name ?? "Guest"}
-                />
-            ) : (
-                <Link href={"/login"} className="bg-emerald-700 p-2">
-                    Login
-                </Link>
-            )}
+            <Game
+                userId={params.userId}
+                // @ts-ignore
+                displayName={userInfomation?.[0]?.name ?? "Guest"}
+            />
         </div>
     );
 }
