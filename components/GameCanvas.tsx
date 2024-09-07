@@ -304,7 +304,7 @@ function Game({ userId, displayName }: GameProps) {
                             href={"/"}
                             className="h-[10vh] w-[10vw] border rounded-xl bg-black font-bold text-3xl absolute bottom-[5vh] left-[45vw] flex items-center justify-center select-none"
                         >
-                            Retry
+                            Exit
                         </Link>
                     </div>
                 </div>
