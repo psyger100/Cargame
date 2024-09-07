@@ -9,10 +9,12 @@ export default async function Home() {
         <div>
             {user ? (
                 <>
-                    <Link href={`/game/${user.id}`} className="bg-emerald-700 p-2">
-                        playgame
-                    </Link>
-                    <SignOutButton />
+                    <div className="flex flex-col w-full">
+                        <Link href={`/game/${user.id}`} className="bg-emerald-700 p-2">
+                            playgame
+                        </Link>
+                        <SignOutButton />
+                    </div>
                 </>
             ) : (
                 <div>

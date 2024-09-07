@@ -2,6 +2,7 @@
 
 import { getServerActionAuth, protectAction } from "@/lib/auth";
 import { createClient, PostgrestError } from "@supabase/supabase-js";
+import { log } from "console";
 
 export const loginAction = async (formData: FormData) => {
     try {
@@ -94,10 +95,15 @@ export async function whoIs(userId: string) {
         process.env.SUPABASE_URL!,
         process.env.SUPABASE_ANON_KEY!,
     );
-    const { data, error } = await supabase.from("profile").select().eq("id", userId);
-    if (error) throw error;
+    try {
+        const { data, error } = await supabase.from("profile").select().eq("id", userId);
+        if (error) throw error;
 
-    if (data) {
-        return data;
-    }
+        if (data) {
+            return data;
+        }
+        if (error) {
+            return false;
+        }
+    } catch (error: any) {}
 }

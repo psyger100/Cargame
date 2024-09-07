@@ -1,5 +1,7 @@
 import { whoIs } from "@/actions/users";
 import Game from "@/components/GameCanvas";
+import { getUser } from "@/lib/auth";
+import Link from "next/link";
 
 interface userInformationType {
     id: string;
@@ -9,12 +11,22 @@ interface userInformationType {
 }
 export default async function game({ params }: any) {
     const userInfomation = await whoIs(params.userId);
+    const user = await getUser();
+
     return (
         <div className="flex items-center flex-col w-full overflow-hidden">
             {/* @ts-ignore */}
-            {/* <p>user id: {userInfomation[0].name}</p> */}
-
-            <Game />
+            {user.id == params.userId ? (
+                <Game
+                    userId={params.userId}
+                    // @ts-ignore
+                    displayName={userInfomation?.[0]?.name ?? "Guest"}
+                />
+            ) : (
+                <Link href={"/login"} className="bg-emerald-700 p-2">
+                    Login
+                </Link>
+            )}
         </div>
     );
 }

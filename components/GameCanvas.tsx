@@ -1,15 +1,21 @@
 "use client";
 import React, { useRef, useEffect, useState } from "react";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
-
 import * as THREE from "three";
-import game from "@/app/game/[userId]/page";
+import axios from "axios";
+import Link from "next/link";
 
-function Game() {
+interface GameProps {
+    userId: string;
+    displayName: string;
+}
+function Game({ userId, displayName }: GameProps) {
+    console.log(userId, displayName);
     const containerRef = useRef<HTMLDivElement>(null);
     const [Score, setScore] = useState(0);
     const [gameOver, setGameOver] = useState(false);
-    // Random Hexadecimal color code  generator like 0x00ff00 return type number
+    const [lastResults, setLastResults] = useState([]);
+
     function randomColor() {
         return Math.random() * 0xffffff;
     }
@@ -69,7 +75,7 @@ function Game() {
 
             const plane = new THREE.Mesh(planeGeometry, planeMaterial);
             scene.add(plane);
-            plane;
+
             const gridHelper = new THREE.GridHelper(300, 300);
             scene.add(gridHelper);
 
@@ -254,6 +260,31 @@ function Game() {
             };
         }
     }, []);
+    useEffect(() => {
+        if (gameOver && Score != 0) {
+            const data = axios.post("/api/addScore", {
+                userId: userId,
+                score: Score,
+            });
+            console.log(data);
+        }
+        const data = async () => {
+            return await axios.post("/api/getResults", {
+                userId: userId,
+            });
+        };
+        data().then((res) => {
+            const result = res.data.map((item: any) => {
+                return (
+                    <div key={item.id} className="flex  w-[30vw] select-none">
+                        <p className=" font-bold text-2xl">{displayName}</p>
+                        <p className="pl-[20vw]  font-bold text-2xl mt-1">{item.score}</p>
+                    </div>
+                );
+            });
+            setLastResults(result);
+        });
+    }, [gameOver]);
 
     return (
         <div ref={containerRef}>
@@ -261,9 +292,22 @@ function Game() {
                 SCORE: {Score}
             </h1>
             {gameOver && (
-                <h1 className="absolute text-white font-bold text-6xl top-0 right-50 ">
-                    GAME OVER
-                </h1>
+                <div className="absolute right-50 w-full h-full border border-white flex flex-col  items-center  top-0 overflow-hidden">
+                    <div className=" border-l-2 border-gray-400 p-4 h-full w-[30vw] border-r-2 flex flex-col items-center bg-gray-400 ">
+                        <h1 className=" text-white font-bold text-6xl  ">GAME OVER</h1>
+                        <h1 className=" text-white font-bold text-6xl ">{displayName}</h1>
+                        <h1 className=" text-black font-bold text-4xl mt-[4vh] ">
+                            Results
+                        </h1>
+                        <div className="w-full ">{lastResults}</div>
+                        <Link
+                            href={"/"}
+                            className="h-[10vh] w-[10vw] border rounded-xl bg-black font-bold text-3xl absolute bottom-[5vh] left-[45vw] flex items-center justify-center select-none"
+                        >
+                            Retry
+                        </Link>
+                    </div>
+                </div>
             )}
         </div>
     );
