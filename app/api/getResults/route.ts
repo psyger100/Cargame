@@ -1,6 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import { NextRequest, NextResponse } from "next/server";
-export async function POST(req: NextRequest, res: NextResponse) {
+export default async function POST(req: NextRequest, res: NextResponse) {
     const body = await req.json();
 
     const supabase = createClient(
@@ -18,9 +18,6 @@ export async function POST(req: NextRequest, res: NextResponse) {
 
         if (data) {
             return Response.json(data);
-        }
-        if (error) {
-            return false;
         }
     } catch (error: any) {}
 }
