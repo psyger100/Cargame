@@ -16,8 +16,9 @@ export default async function POST(req: NextRequest, res: NextResponse) {
             .order("score", { ascending: true });
         if (error) return Response.json(error);
 
-        if (data) {
-            return Response.json(data);
-        }
-    } catch (error: any) {}
+        return Response.json(data);
+    } catch (error: any) {
+        console.error("Error fetching scores:", error);
+        return new Response("Internal server error", { status: 500 });
+    }
 }
